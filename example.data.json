@@ -1,0 +1,43 @@
+{
+	"task_list":
+		[
+			{
+				"name":	"Scrum/organization meetings",
+				"stored_time":	0
+			},
+			{
+				"name":	"Project X887/A",
+				"stored_time":	11
+			},
+			{
+				"name":	"Project D92 - Design meetings/discussions",
+				"stored_time":	0
+			},
+			{
+				"name":	"Project D92 - Thinking/documenting",
+				"stored_time":	0
+			},
+			{
+				"name":	"Project G7",
+				"stored_time":	0
+			},
+			{
+				"name":	"Project Z2 - all activities",
+				"stored_time":	0
+			},
+			{
+				"name":	"Coffe break and chit-chats",
+				"stored_time":	179
+			},
+			{
+				"name":	"Workplace maintenance",
+				"stored_time":	179
+			}
+		],
+	"app_data":
+		{
+			"is_running":	false,
+			"from_time":	1670625171,
+			"current_task":	1
+		}
+}

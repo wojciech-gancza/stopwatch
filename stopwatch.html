@@ -169,23 +169,8 @@ function getTotalTime() {
 	return total_time;	
 }
 
-class Task {
-	constructor(task_name, time) {
-		this.name = task_name;
-		this.stored_time = time;
-	}
-}
-
 function storeData() {
-	tasks = [ ]
-	for (i=0; i<task_list.length; ++i) {
-		tasks.push( { 
-			"name": task_list[i].name,
-			"stored_time": task_list[i].stored_time 
-			} 
-		);
-	};
-	data = {"task_list": tasks,  
+	data = {"task_list": task_list,  
 	         "app_data": { 
 				"is_running": is_running,
 				"from_time": from_time, 
@@ -205,10 +190,7 @@ function loadData(init) {
 	is_running = data.app_data.is_running;
 	from_time = data.app_data.from_time;
 	current_task = data.app_data.current_task
-	tasks = data.task_list
-	for (i=0; i<tasks.length; ++i) {
-		task_list.push(new Task(tasks[i].name, tasks[i].stored_time))
-	}
+	task_list = data.task_list
 	updateStoredTime();
 	from_time = getCurrentTimeAsSec();
 };
