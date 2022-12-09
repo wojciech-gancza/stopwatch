@@ -10,19 +10,28 @@
 		margin: 0pt;
 	}
     .task_time {
-       text-align: right;
-	   font-family: Courier New;
-	   font-size: 12pt;
+        text-align: right;
+	    font-family: Courier New;
+	    font-size: 12pt;
     }
     .task_name {
-	   font-family: Verdana;
-	   font-size: 12pt;
-	   text-decoration: none;
-	   color: white;
+	    font-family: Verdana;
+	    font-size: 12pt;
+	    text-decoration: none;
+	    color: white;
     }
+	.head_checkbox {
+		background: #c0c0c0;
+		color: black;
+	    width: 28px;
+	}
 	.head {
 		background: #c0c0c0;
 		color: black;
+	    font-family: Verdana;
+	    font-size: 12pt;
+	    text-decoration: none;
+		font-weight: bold;
 	}
     .head_time {
 		background: #c0c0c0;
@@ -178,15 +187,15 @@ var tasks = [ ];
 var unproductive_time = 0;
 
 tasks.push(
-	new Task("Working", 3), 
-	new Task("Sleeping", 8000), 
-	new Task("Meeting", 370000), 
-	new Task("just thinking", 179));
+	new Task("Working", 0), 
+	new Task("Sleeping", 0), 
+	new Task("Meeting", 0), 
+	new Task("just thinking", 0));
 
 table = "";
 table = tag_tr(
-	tag_td("head", tag_checkbox(is_running)) +
-	tag_td("head", "&nbsp;") + 
+	tag_td("head_checkbox", tag_checkbox(is_running)) +
+	tag_td("head", "worktime") + 
 	tag_td("head_time", tag_span('all', convertToTimeText(getTotalProductiveTime()))));
 	
 for (i=0; i<tasks.length; ++i) {
