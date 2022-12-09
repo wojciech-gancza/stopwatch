@@ -18,24 +18,29 @@
 	   font-family: Verdana;
 	   font-size: 12pt;
 	   text-decoration: none;
+	   color: white;
     }
 	.head {
-		border-bottom: 1pt solid black;
+		background: #c0c0c0;
+		color: black;
 	}
     .head_time {
-	   border-bottom: 1pt solid black;
-       text-align: right;
-	   font-family: Courier New;
-	   font-size: 12pt;
-	   font-weight: bold;
+		background: #c0c0c0;
+		color: black;
+		text-align: right;
+		font-family: Courier New;
+		font-size: 12pt;
+		font-weight: bold;
     }
   </style>
 </head>
 
-<body>
+<body style="margin: 0; padding: 0">
   <form name="stopwatch">
-    <div id="page">&nbsp;</div>
-    <script>
+    <div style="position: absolute; width: 100%; height: 100%;">
+      <div id="page" style="position: relative; margin-left: auto; margin-right: auto; margin-top: 40px; padding: 6pt; background: gray; width: 480px; height: 320; text-color: light-gray;">&nbsp;</div>
+    </div>
+	<script>
 
 function convertToTimeText(seconds) {
 	if (seconds < 0) 
@@ -58,7 +63,7 @@ function attr_class(class_name) {
 }
 
 function tag_table(table_body) {
-	return "<table>" + table_body + "</table>";
+	return "<table width=\"100%\">" + table_body + "</table>";
 }
 
 function tag_tr(row_body) {
