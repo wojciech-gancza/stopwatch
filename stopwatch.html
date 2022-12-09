@@ -108,6 +108,7 @@ function selectTaskByRadio(task_number) {
 	current = task_number;
 	startCountingTime();
 	current_task = task_number;
+	storeData();
 }
 
 function selectTaskByLink(task_number) {
@@ -119,10 +120,12 @@ function changeRunningCheckbox() {
 	updateStoredTime();
 	is_running = document.forms.stopwatch.running.checked
 	startCountingTime();
+	storeData();
 }
 
 function startCountingTime() {
 	from_time = getCurrentTimeAsSec();
+	storeData();
 }
 
 function setPageContent(page) {
@@ -173,16 +176,50 @@ class Task {
 	}
 }
 
+function storeData() {
+	tasks = [ ]
+	for (i=0; i<task_list.length; ++i) {
+		tasks.push( { 
+			"name": task_list[i].name,
+			"stored_time": task_list[i].stored_time 
+			} 
+		);
+	};
+	data = {"task_list": tasks,  
+	         "app_data": { 
+				"is_running": is_running,
+				"from_time": from_time, 
+				"current_task": current_task
+				}
+		    };
+	txt = JSON.stringify(data)
+	
+	// alert(txt);
+}
+
+function loadData(init) {
+
+	init = '{"task_list":[{"name":"Working","stored_time":0},{"name":"Sleeping","stored_time":11},{"name":"Meeting","stored_time":0},{"name":"Just thinking","stored_time":179}],"app_data":{"is_running":true,"from_time":1670625171,"current_task":1}}';
+	
+	data = JSON.parse(init);
+	is_running = data.app_data.is_running;
+	from_time = data.app_data.from_time;
+	current_task = data.app_data.current_task
+	tasks = data.task_list
+	for (i=0; i<tasks.length; ++i) {
+		task_list.push(new Task(tasks[i].name, tasks[i].stored_time))
+	}
+	updateStoredTime();
+	from_time = getCurrentTimeAsSec();
+};
+
+
 var is_running = false;
 var from_time = 0;
 var current_task = 0;
 var task_list = [ ];
 
-task_list.push(
-	new Task("Working", 0), 
-	new Task("Sleeping", 0), 
-	new Task("Meeting", 0), 
-	new Task("Just thinking", 0));
+loadData();
 
 table = "";
 table = tag_tr(
