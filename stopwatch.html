@@ -1,0 +1,203 @@
+<html>
+
+<head>
+  <style>
+	table {
+		border-collapse: collapse;
+	}    
+	td {
+		padding: 3pt;
+		margin: 0pt;
+	}
+    .task_time {
+       text-align: right;
+	   font-family: Courier New;
+	   font-size: 12pt;
+    }
+    .task_name {
+	   font-family: Verdana;
+	   font-size: 12pt;
+	   text-decoration: none;
+    }
+	.head {
+		border-bottom: 1pt solid black;
+	}
+    .head_time {
+	   border-bottom: 1pt solid black;
+       text-align: right;
+	   font-family: Courier New;
+	   font-size: 12pt;
+	   font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <form name="stopwatch">
+    <div id="page">&nbsp;</div>
+    <script>
+
+function convertToTimeText(seconds) {
+	if (seconds < 0) 
+		return "Negative";
+	if (seconds < 60)
+		return (seconds < 10 ? "0" : "") + seconds.toString();
+	else if (seconds < 60*60)
+		return convertToTimeText(Math.floor(seconds/60)) + ":" + convertToTimeText(seconds%60);
+	else if (seconds < 60*60*24)
+		return convertToTimeText(Math.floor(seconds/(60*60))) + ":" + convertToTimeText(seconds%(60*60));
+	else
+		return (Math.floor(seconds/(24*60*60))).toString() + "d " + convertToTimeText(seconds%(24*60*60));
+};
+
+function attr_class(class_name) {
+	if (class_name)
+		return ' class="' + class_name.toString() + '"';
+	else
+		return "";
+}
+
+function tag_table(table_body) {
+	return "<table>" + table_body + "</table>";
+}
+
+function tag_tr(row_body) {
+	return "<tr>" + row_body + "</tr>";
+}
+
+function tag_td(cell_class, cell_body) {
+	return "<td" + attr_class(cell_class) + ">" + cell_body + "</td>";
+}
+
+function tag_radio(value, selected) {
+	return '<input type="radio" name="task" value="' + value + 
+			'" onClick="javascript: selectTaskByRadio(' + 
+			value + ');"' + (selected ? " checked>" : ">"); 
+}
+
+function tag_checkbox(selected) {
+	return '<input type="checkbox" name="running" onClick="javascript: changeRunningCheckbox();"' + 
+			(selected ? " checked>" : ">"); 
+}
+
+function tag_a_selection(cell_class, value, body) {
+	return '<a href="javascript: selectTaskByLink(' + value + ');"' + 
+			attr_class(cell_class) + '>' + body + '</a>';
+}
+
+function tag_span(id, content) {
+	return '<span id="time' + id.toString() + '">' + content + '</span>';
+}
+
+function selectTaskByRadio(task_number) {
+	updateStoredTime(task_number);
+	current = task_number;
+}
+
+function selectTaskByLink(task_number) {
+	document.forms.stopwatch.task.value = task_number;
+	updateStoredTime();
+	current = task_number;
+}
+
+function changeRunningCheckbox() {
+	updateStoredTime();
+	is_running = document.forms.stopwatch.running.checked
+}
+
+function setPageContent(page) {
+	document.getElementById("page").innerHTML = page;
+}
+
+function updateTime(id, value) {
+	document.getElementById("time"+id.toString()).innerHTML = convertToTimeText(value);
+}
+
+function getCurrentTimeAsSec() {
+	now = new Date();
+	now_as_seconds = now.getTime() / 1000;
+	return Math.floor(now_as_seconds);
+}
+
+function getRegisteredTime() {
+	return unproductive_time + getTotalProductiveTime();
+}
+
+function getNewTime() {
+	unstored_time = getCurrentTimeAsSec() - getRegisteredTime() - base_time;
+	if (unstored_time >= 0) {
+		return unstored_time;
+	}
+	else {
+		base_time = base_time + unstored_time;
+		return 0;
+	}
+}
+
+function timeTick() {
+	if (is_running) {
+		unstored_time = getNewTime();
+		updateTime("all", total_time + unstored_time);
+		updateTime(current, tasks[current].stored_time + unstored_time);
+	}
+}
+
+function updateStoredTime() {
+	if (is_running) {
+		tasks[current].stored_time = tasks[current].stored_time + getNewTime()
+	}
+	else {
+		unproductive_time = unproductive_time + getNewTime();
+	};	
+}
+
+function getTotalProductiveTime() {
+	total_time = 0;
+	for (i=0; i<tasks.length; ++i) {
+		total_time = total_time + tasks[i].stored_time;
+	};
+	return total_time;	
+}
+
+class Task {
+	constructor(task_name, time) {
+		this.name = task_name;
+		this.stored_time = time;
+	}
+}
+
+var base_time = getCurrentTimeAsSec();
+var current = 0;
+var is_running = false;
+var tasks = [ ];
+var unproductive_time = 0;
+
+tasks.push(
+	new Task("Working", 3), 
+	new Task("Sleeping", 8000), 
+	new Task("Meeting", 370000), 
+	new Task("just thinking", 179));
+
+table = "";
+table = tag_tr(
+	tag_td("head", tag_checkbox(is_running)) +
+	tag_td("head", "&nbsp;") + 
+	tag_td("head_time", tag_span('all', convertToTimeText(getTotalProductiveTime()))));
+	
+for (i=0; i<tasks.length; ++i) {
+	row = tag_td("", tag_radio(i.toString(), (i == current)));
+	row = row + tag_td("", tag_a_selection("task_name", i.toString(), tasks[i].name));
+	row = row + tag_td("task_time", tag_span(i, convertToTimeText(tasks[i].stored_time)));
+	table = table + tag_tr(row);
+};
+
+page = tag_table(table);
+setPageContent(page)
+
+window.setInterval(timeTick, 1000);
+
+		</script>
+    </form>
+</body>
+
+</html>
