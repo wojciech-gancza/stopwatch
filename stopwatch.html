@@ -105,8 +105,7 @@ function tag_span(id, content) {
 
 function selectTaskByRadio(task_number) {
 	updateStoredTime();
-	current = task_number;
-	current_task = task_number;
+	web_interface_data.current_task = task_number;
 	startCountingTime();
 }
 
@@ -117,12 +116,12 @@ function selectTaskByLink(task_number) {
 
 function changeRunningCheckbox() {
 	updateStoredTime();
-	is_running = document.forms.stopwatch.running.checked
+	web_interface_data.is_running = document.forms.stopwatch.running.checked
 	startCountingTime();
 }
 
 function startCountingTime() {
-	from_time = getCurrentTimeAsSec();
+	web_interface_data.from_time = getCurrentTimeAsSec();
 	storeData();
 }
 
@@ -141,8 +140,8 @@ function getCurrentTimeAsSec() {
 }
 
 function getNewTime() {
-	if (is_running) {
-		return getCurrentTimeAsSec() - from_time;
+	if (web_interface_data.is_running) {
+		return getCurrentTimeAsSec() - web_interface_data.from_time;
 	}
 	else {
 		return 0;
@@ -150,17 +149,18 @@ function getNewTime() {
 }
 
 function timeTick() {
-	if (is_running) {
+	if (web_interface_data.is_running) {
 		unstored_time = getNewTime();
 		total_time = getTotalTime()
 		updateTime("all", total_time + unstored_time);
-		updateTime(current_task, task_list[current_task].stored_time + unstored_time);
+		updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].stored_time + unstored_time);
 	}
 }
 
 function updateStoredTime() {
-	if (is_running) {
-		task_list[current_task].stored_time = task_list[current_task].stored_time + getNewTime()
+	if (web_interface_data.is_running) {
+		task_list[web_interface_data.current_task].stored_time = 
+				task_list[web_interface_data.current_task].stored_time + getNewTime()
 	}
 }
 
@@ -173,13 +173,7 @@ function getTotalTime() {
 }
 
 function storeData() {
-	data = {"task_list": task_list,  
-	         "app_data": { 
-				"is_running": is_running,
-				"from_time": from_time, 
-				"current_task": current_task
-				}
-		    };
+	data = { "task_list": task_list, "web_interface_data": web_interface_data };
 	txt = JSON.stringify(data)
 	
 	fetch('/', {
@@ -196,28 +190,24 @@ function loadData() {
 	init = " ***** *** ";
 	
 	data = JSON.parse(init);
-	is_running = data.app_data.is_running;
-	from_time = data.app_data.from_time;
-	current_task = data.app_data.current_task
+	
+	web_interface_data = data.web_interface_data
 	task_list = data.task_list
 };
 
-
-var is_running = false;
-var from_time = 0;
-var current_task = 0;
+var web_interface_data = { };
 var task_list = [ ];
 
 loadData();
 
 table = "";
 table = tag_tr(
-	tag_td("head_checkbox", tag_checkbox(is_running)) +
+	tag_td("head_checkbox", tag_checkbox(web_interface_data.is_running)) +
 	tag_td("head", "worktime") + 
 	tag_td("head_time", tag_span('all', convertToTimeText(getTotalTime() + getNewTime()))));
 	
 for (i=0; i<task_list.length; ++i) {
-	row = tag_td("", tag_radio(i.toString(), (i == current_task)));
+	row = tag_td("", tag_radio(i.toString(), (i == web_interface_data.current_task)));
 	row = row + tag_td("", tag_a_selection("task_name", i.toString(), task_list[i].name));
 	row = row + tag_td("task_time", tag_span(i, convertToTimeText(task_list[i].stored_time)));
 	table = table + tag_tr(row);
@@ -226,7 +216,7 @@ for (i=0; i<task_list.length; ++i) {
 page = tag_table(table);
 setPageContent(page)
 
-updateTime(current_task, task_list[current_task].stored_time + getNewTime());
+updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].stored_time + getNewTime());
 
 window.setInterval(timeTick, 1000);
 

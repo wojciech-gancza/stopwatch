@@ -34,10 +34,11 @@
 				"stored_time":	179
 			}
 		],
-	"app_data":
+	"web_interface_data":
 		{
 			"is_running":	false,
 			"from_time":	1670625171,
-			"current_task":	1
+			"current_task":	1,
+			"user":			"unknown"
 		}
 }
