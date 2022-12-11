@@ -1,6 +1,6 @@
-# copy-past example form https://pythonbasics.org/webserver/
-# then made some modifications to return and process timesheet
-# processing
+#!/usr/bin/python
+
+# based on example form https://pythonbasics.org/webserver/
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from datetime import datetime
@@ -10,7 +10,7 @@ import json
 hostName = "localhost"
 serverPort = 8080
 
-""" """
+""" Access to local files """
 class LocalFileAccess:
 
     @staticmethod 
