@@ -106,9 +106,8 @@ function tag_span(id, content) {
 function selectTaskByRadio(task_number) {
 	updateStoredTime();
 	current = task_number;
-	startCountingTime();
 	current_task = task_number;
-	storeData();
+	startCountingTime();
 }
 
 function selectTaskByLink(task_number) {
@@ -120,7 +119,6 @@ function changeRunningCheckbox() {
 	updateStoredTime();
 	is_running = document.forms.stopwatch.running.checked
 	startCountingTime();
-	storeData();
 }
 
 function startCountingTime() {
@@ -184,8 +182,14 @@ function storeData() {
 		    };
 	txt = JSON.stringify(data)
 	
-	// alert(txt);
-}
+	fetch('/', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: txt
+})}
 
 function loadData() {
 	
