@@ -1,16 +1,17 @@
-# copy-past example form https://pythonbasics.org/webserver/
-# then made some modifications to return and process timesheet
-# processing
+#!/usr/bin/python
+
+# based on example form https://pythonbasics.org/webserver/
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from datetime import datetime
-import time
 import json
+import argparse
 
-hostName = "localhost"
-serverPort = 8080
+host_name = "localhost"
+server_port = 8483
+timesheet_path = ""
 
-""" """
+""" Access to local files """
 class LocalFileAccess:
 
     @staticmethod 
@@ -54,15 +55,15 @@ class Timeseets:
         
     @staticmethod
     def _getCurrentTimesheetFileName(user_name):
-        return datetime.now().strftime("%Y-%m-%d-") + user_name + ".json"
+        return timesheet_path + datetime.now().strftime("%Y-%m-%d-") + user_name + ".json"
 
     @staticmethod
     def _getUserDefaultTimesheetFileName(user_name):
-        return "default-" + user_name + ".json"
+        return timesheet_path + "default-" + user_name + ".json"
 
     @staticmethod
     def _getDefaultTimesheetFileName():
-        return "global-default.json"
+        return timesheet_path + "global-default.json"
 
     @staticmethod
     def _getDefaultTimesheetFile(user_name):
@@ -121,8 +122,8 @@ class StopwatchServer(BaseHTTPRequestHandler):
         
     @staticmethod 
     def main():
-        webServer = HTTPServer((hostName, serverPort), StopwatchServer)
-        print("Server started http://%s:%s" % (hostName, serverPort))
+        webServer = HTTPServer((host_name, server_port), StopwatchServer)
+        print("Server started http://%s:%s" % (host_name, server_port))
         try:
             webServer.serve_forever()
         except KeyboardInterrupt:
@@ -131,5 +132,18 @@ class StopwatchServer(BaseHTTPRequestHandler):
         print("Server stopped.")       
 
 """ Just start web server when module is called as application """
-if __name__ == "__main__":        
+if __name__ == "__main__":   
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--port", help = "port server is listening on")
+    parser.add_argument("-i", "--ip", help = "ip of the interface server is listening on")
+    parser.add_argument("-s", "--storage", help = "directory where timesheet json files are stored (slash ending)")
+    args = parser.parse_args()
+ 
+    if args.port:
+        server_port = int(args.port)
+    if args.ip:
+        host_name = args.ip
+    if args.storage:
+        timesheet_path = args.storage
+        
     StopwatchServer.main()
