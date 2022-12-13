@@ -28,27 +28,88 @@
 	</div>
     <script>
 
+function convertNumber(txt) {
+	number = 0;
+	for (i=0; i<txt.length; ++i) {
+		character = txt.charCodeAt(i);
+		if (character < 48) 
+			return -1;
+		digit = character - 48;
+		if (digit >= 10)
+			return -1; 
+		number = 10 * number + digit;
+	};
+	return number;
+}
+
+function convertTimeString(txt) {
+	parts = txt.split(':');
+	if (parts.length == 1)
+		return 60 * convertNumber(parts[0]);
+	if (parts.length == 2)
+		return 60 * 60 * convertNumber(parts[0]) + 60 * convertNumber(parts[1]);
+	if (parts.length == 3)
+		return 60 * 60 * convertNumber(parts[0]) + 60 * convertNumber(parts[1]) + convertNumber(parts[2]);
+	return -1;
+}
+
+function convertWordToTime(txt) {
+	txt = txt.trim();
+	if (txt == "")
+		return -1;
+		
+	lastCharacter = txt.slice(-1);
+	allButLast = txt.slice(0, -1);
+	
+	if (lastCharacter == "d")
+		return 24*60*60*convertNumber(allButLast);
+	if (lastCharacter == "h")
+		return 60*60*convertNumber(allButLast);
+	if (lastCharacter == "m")
+		return 60*convertNumber(allButLast);
+	if (lastCharacter == "s")
+		return convertNumber(allButLast);
+	return convertTimeString(txt);	
+}
+
 function convertTimeDuration(txt) {
 	words = txt.split(' ')
-	value = 0;
-	for (i=0; i<words.length; ++i) {
-		alert(words[i])
+	result = 0;
+	for (j=0; j<words.length; ++j) {
+		value = convertWordToTime(words[j])
+		if (value < 0) 
+			return -1;
+		result = result + value;
 	}
-	return 554677;
+	return result;
 }
 	
+function convertTimeToOneField(seconds) {
+	return (seconds < 10 ? "0" : "") + seconds.toString();
+}
+
+function convertTimeToTwoFields(seconds) {
+	return convertTimeToOneField(Math.floor(seconds/60)) + ":" + convertTimeToOneField(seconds%60);
+}
+
+function convertTimeToThreeFields(seconds) {
+	return convertTimeToOneField(Math.floor(seconds/3600)) + ":" + convertTimeToTwoFields(seconds%3600);
+}
+
 function convertToTimeText(seconds) {
 	if (seconds < 0) 
 		return "-" + convertToTimeText(-seconds);
 	if (seconds < 60)
-		return (seconds < 10 ? "0" : "") + seconds.toString();
+		return convertTimeToOneField(seconds)
 	else if (seconds < 60*60)
-		return convertToTimeText(Math.floor(seconds/60)) + ":" + convertToTimeText(seconds%60);
+		return convertTimeToTwoFields(seconds);
 	else if (seconds < 60*60*24)
-		return convertToTimeText(Math.floor(seconds/(60*60))) + ":" + convertToTimeText(seconds%(60*60));
+		return convertTimeToThreeFields(seconds);
 	else
-		return (Math.floor(seconds/(24*60*60))).toString() + "d " + convertToTimeText(seconds%(24*60*60));
+		return (Math.floor(seconds/(24*60*60))).toString() + "d " + convertTimeToThreeFields(seconds%(24*60*60));
 };
+
+//--------------------------------------------
 	
 function editCell() {
 	document.getElementById("x1anhr").style.display = "none";
