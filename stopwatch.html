@@ -41,6 +41,8 @@
 		font-size: 12pt;
 		font-weight: bold;
     }
+	dev.editbox {
+	}
   </style>
 </head>
 
@@ -108,8 +110,13 @@ function tag_a_selection(cell_class, value, body) {
 			attr_class(cell_class) + '>' + body + '</a>';
 }
 
-function tag_span(id, content) {
+function tag_span_with_time(id, content) {
 	return '<span id="time' + id.toString() + '">' + content + '</span>';
+}
+
+function tag_span_with_editable_time(id, content) {
+	return '<span id="time' + id.toString() + '">' + content + '<div class="editbox"><input name="timeEd' + 
+		   id.toString() + '" style="width: 70; text-align: right; border: 0; font-size: 12pt"></div></span>';
 }
 
 function selectTaskByRadio(task_number) {
@@ -219,12 +226,12 @@ table = "";
 table = tag_tr(
 	tag_td("head_checkbox", tag_checkbox(web_interface_data.is_running)) +
 	tag_td("head", "worktime") + 
-	tag_td("head_time", tag_span('all', convertToTimeWideText(getTotalTime() + getNewTime()))));
+	tag_td("head_time", tag_span_with_time('all', convertToTimeWideText(getTotalTime() + getNewTime()))));
 	
 for (i=0; i<task_list.length; ++i) {
 	row = tag_td("", tag_radio(i.toString(), (i == web_interface_data.current_task)));
 	row = row + tag_td("", tag_a_selection("task_name", i.toString(), task_list[i].name));
-	row = row + tag_td("task_time", tag_span(i, convertToTimeText(task_list[i].stored_time)));
+	row = row + tag_td("task_time", tag_span_with_editable_time(i, convertToTimeText(task_list[i].stored_time)));
 	table = table + tag_tr(row);
 };
 
