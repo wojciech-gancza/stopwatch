@@ -41,15 +41,29 @@
 		font-size: 12pt;
 		font-weight: bold;
     }
-	dev.editbox {
+	.window {
+		position: absolute; 
+		width: 100%; 
+		height: 100%;
+	}
+	.timesheet_panel {
+		position: relative; 
+		margin-left: auto; 
+		margin-right: auto; 
+		margin-top: 40px; 
+		padding: 6pt; 
+		background: gray; 
+		width: 480px; 
+		height: 320px; 
+		text-color: light-gray;
 	}
   </style>
 </head>
 
 <body style="margin: 0; padding: 0">
   <form name="stopwatch">
-    <div style="position: absolute; width: 100%; height: 100%;">
-      <div id="page" style="position: relative; margin-left: auto; margin-right: auto; margin-top: 40px; padding: 6pt; background: gray; width: 480px; height: 320; text-color: light-gray;">&nbsp;</div>
+    <div class="window">
+      <div class="timesheet_panel" id="page">&nbsp;</div>
     </div>
 	<script>
 
