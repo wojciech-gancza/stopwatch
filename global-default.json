@@ -2,55 +2,37 @@
 	"task_list":
 		[
 			{
-				"name":	"Scrum/organization meetings",
-				"stored_time":	0
+				"name":	"Scrum/organization meetings"
 			},
 			{
-				"name":	"Task 1",
-				"stored_time":	0
+				"name":	"Task 1"
 			},
 			{
-				"name":	"Task 2",
-				"stored_time":	0
+				"name":	"Task 2"
 			},
 			{
-				"name":	"Task 3",
-				"stored_time":	0
+				"name":	"Task 3"
 			},
 			{
-				"name":	"Task 4",
-				"stored_time":	0
+				"name":	"Task 4"
 			},
 			{
-				"name":	"Task 5",
-				"stored_time":	0
+				"name":	"Task 5"
 			},
 			{
-				"name":	"Task 6",
-				"stored_time":	0
+				"name":	"Task 6"
 			},
 			{
-				"name":	"Task 7",
-				"stored_time":	0
+				"name":	"Task 7"
 			},
 			{
-				"name":	"Task 8",
-				"stored_time":	0
+				"name":	"Task 8"
 			},
 			{
-				"name":	"Coffe break and chit-chats",
-				"stored_time":	0
+				"name":	"Coffe break and chit-chats"
 			},
 			{
-				"name":	"Workplace maintenance",
-				"stored_time":	0
+				"name":	"Workplace maintenance"
 			}
-		],
-	"web_interface_data":
-		{
-			"is_running":	false,
-			"from_time":	0,
-			"current_task":	9,
-			"user":			" ***** *** "
-		}
+		]
 }

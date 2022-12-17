@@ -265,7 +265,7 @@ function acceptCellValue(id) {
 	newTimeValue = convertTimeDuration(newTimeValue);
 	if (newTimeValue != valueBeforeEditing && newTimeValue >= 0) {
 		updateTime(id, newTimeValue);
-		task_list[id].stored_time = newTimeValue;
+		task_list[id].worked_time_in_seconds = newTimeValue;
 		if (web_interface_data.current_task == id)
 			startCountingTime();
 		else
@@ -337,7 +337,7 @@ function timeTick() {
 	unstored_time = getNewTime();
 	total_time = getTotalTime()
 	updateTotalTime(total_time + unstored_time);
-	updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].stored_time + unstored_time);
+	updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].worked_time_in_seconds + unstored_time);
 }
 
 function showTotalTome() {
@@ -348,15 +348,15 @@ function showTotalTome() {
 
 function updateStoredTime() {
 	if (web_interface_data.is_running) {
-		task_list[web_interface_data.current_task].stored_time = 
-				task_list[web_interface_data.current_task].stored_time + getNewTime()
+		task_list[web_interface_data.current_task].worked_time_in_seconds = 
+				task_list[web_interface_data.current_task].worked_time_in_seconds + getNewTime()
 	}
 }
 
 function getTotalTime() {
 	total_time = 0;
 	for (i=0; i<task_list.length; ++i) {
-		total_time = total_time + task_list[i].stored_time;
+		total_time = total_time + task_list[i].worked_time_in_seconds;
 	};
 	return total_time;	
 }
@@ -398,14 +398,14 @@ table = tag_tr(
 for (i=0; i<task_list.length; ++i) {
 	row = tag_td("", tag_radio(i.toString(), (i == web_interface_data.current_task)));
 	row = row + tag_td("", tag_a_selection("task_name", i.toString(), task_list[i].name));
-	row = row + tag_td("task_time", tag_span_with_editable_time(i, convertToTimeText(task_list[i].stored_time)));
+	row = row + tag_td("task_time", tag_span_with_editable_time(i, convertToTimeText(task_list[i].worked_time_in_seconds)));
 	table = table + tag_tr(row);
 };
 
 page = tag_table(table);
 setPageContent(page)
 
-updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].stored_time + getNewTime());
+updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].worked_time_in_seconds + getNewTime());
 
 window.setInterval(timeTick, 1000);
 

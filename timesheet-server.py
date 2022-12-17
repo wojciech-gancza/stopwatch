@@ -38,14 +38,31 @@ class Timeseets:
         file_name = Timeseets._getCurrentTimesheetFileName(user_name)
         timesheet_file = LocalFileAccess.getLocalFile(file_name)
         if timesheet_file is None:
-            file_name = Timeseets._getUserDefaultTimesheetFileName(user_name)
-            default_file = LocalFileAccess.getLocalFile(file_name)
-            if default_file is None:
-                file_name = Timeseets._getDefaultTimesheetFileName()
-                default_file = LocalFileAccess.getLocalFile(file_name)
-            timesheet_file = default_file.replace(" ***** *** ", user_name)
+            timesheet_file = Timeseets.getDefaultTimesheet(user_name)
         return timesheet_file;
         
+    @staticmethod
+    def getDefaultTimesheet(user_name):
+        file_name = Timeseets._getUserDefaultTimesheetFileName(user_name)
+        default_file = LocalFileAccess.getLocalFile(file_name)
+        if default_file is None:
+            file_name = Timeseets._getDefaultTimesheetFileName()
+            default_file = LocalFileAccess.getLocalFile(file_name)
+        if default_file is None:
+            return None
+        data = json.loads(default_file)  
+        if "task_list" in data.keys():
+            for task in data["task_list"]:
+                if "worked_time_in_seconds" not in task.keys():
+                    task["worked_time_in_seconds"] = 0
+        if "web_interface_data" not in data.keys():
+            data["web_interface_data"] = { }
+            data["web_interface_data"]["is_running"] = False
+            data["web_interface_data"]["from_time"] = 0
+            data["web_interface_data"]["current_task"] = 0            
+        data["web_interface_data"]["user"] = user_name;
+        return json.dumps(data)
+
     @staticmethod 
     def setTimesheet(data):
         parsed_data = json.loads(data)
