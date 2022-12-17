@@ -13,6 +13,7 @@
         text-align: right;
 	    font-family: Courier New;
 	    font-size: 12pt;
+		color:#303030
     }
     .task_name {
 	    font-family: Verdana;
@@ -57,6 +58,18 @@
 		height: 320px; 
 		text-color: light-gray;
 	}
+	.time_to_edit {
+		font-size: 12pt; 
+		text-decoration: none;
+		color:#303030;
+		font-weight: bold;
+	}
+	.time_input_box {
+		width: 70px; 
+		font-size: 12pt; 
+		font-family: Courier New;
+		text-align: right
+	}
   </style>
 </head>
 
@@ -66,6 +79,8 @@
       <div class="timesheet_panel" id="page">&nbsp;</div>
     </div>
 	<script>
+
+var valueBeforeEditing = 0;
 
 function convertTimeToOneField(seconds) {
 	return (seconds < 10 ? "0" : "") + seconds.toString();
@@ -109,9 +124,9 @@ function convertNumber(txt) {
 function convertTimeString(txt) {
 	parts = txt.split(':');
 	if (parts.length == 1)
-		return 60 * convertNumber(parts[0]);
+		return convertNumber(parts[0]);
 	if (parts.length == 2)
-		return 60 * 60 * convertNumber(parts[0]) + 60 * convertNumber(parts[1]);
+		return 60 * convertNumber(parts[0]) + convertNumber(parts[1]);
 	if (parts.length == 3)
 		return 60 * 60 * convertNumber(parts[0]) + 60 * convertNumber(parts[1]) + convertNumber(parts[2]);
 	return -1;
@@ -197,9 +212,71 @@ function tag_span_with_time(id, content) {
 }
 
 function tag_span_with_editable_time(id, content) {
-//	return '<span id="time' + id.toString() + '">' + content + '<div class="editbox"><input name="timeEd' + 
-//		   id.toString() + '" style="width: 70; text-align: right; border: 0; font-size: 12pt"></div></span>';
-	return '<span id="time' + id.toString() + '">' + content + '</span>';
+	id = id.toString();
+	return	'<a id="time' + id + '" href="javascript: editCell(' + id + 
+			');" class="time_to_edit">' + content + '</a>' +	 
+			'<div id="time' + id +'div" style="display: none; position: relative">' +
+		    '<input type="text" onFocusOut="acceptCellValue(' + id + 
+			')" onKeyDown="cellKey(event, ' + id + ')" id="time' + 
+			id + 'input" name="x' + id + 'input" class="time_input_box"></div>';
+}
+
+function cellKey(event, id) {
+	if (event.keyCode == 13) {
+		event.keyCode = 0;
+		acceptCellValue(id);
+	}
+	if (event.keyCode == 27) {
+		event.keyCode = 0;
+		escapeCell(id);
+	}
+}
+
+function editCell(id) {
+	getTextToEdit(id);
+	showEditBox(id);
+}
+
+function getTextToEdit(id) {
+	text_id = "time" + id.toString();
+	edit_id = text_id + "input";
+	valueBeforeEditing = document.getElementById(text_id).innerHTML;
+	document.getElementById(edit_id).value = valueBeforeEditing;
+	valueBeforeEditing = convertTimeDuration(valueBeforeEditing);
+}
+	
+function showEditBox(id) {
+	text_id = "time" + id.toString();
+	edit_id = text_id + "input";
+	edit_div_id = text_id + "div";
+	document.getElementById(text_id).style.display = "none";
+	document.getElementById(edit_div_id).style.display = "inline";
+	document.getElementById(edit_id).focus();
+	document.getElementById(edit_id).select();
+}
+
+function acceptCellValue(id) {
+	text_id = "time" + id.toString();
+	edit_id = text_id + "input";
+	newTimeValue = document.getElementById(edit_id).value;
+	newTimeValue = convertTimeDuration(newTimeValue);
+	if (newTimeValue != valueBeforeEditing && newTimeValue >= 0) {
+		updateTime(id, newTimeValue);
+		task_list[id].stored_time = newTimeValue;
+		if (web_interface_data.current_task == id)
+			startCountingTime();
+		else
+			storeData();
+	}
+	escapeCell(id);
+}
+
+function escapeCell(id)  {
+	getTextToEdit(id);
+	text_id = "time" + id.toString();
+	edit_div_id = text_id + "div";
+	document.getElementById(text_id).style.display = "inline";
+	document.getElementById(edit_div_id).style.display = "none";
 }
 
 function selectTaskByRadio(task_number) {
@@ -254,12 +331,16 @@ function getNewTime() {
 }
 
 function timeTick() {
-	if (web_interface_data.is_running) {
-		unstored_time = getNewTime();
-		total_time = getTotalTime()
-		updateTotalTime(total_time + unstored_time);
-		updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].stored_time + unstored_time);
-	}
+	unstored_time = getNewTime();
+	total_time = getTotalTime()
+	updateTotalTime(total_time + unstored_time);
+	updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].stored_time + unstored_time);
+}
+
+function showTotalTome() {
+	unstored_time = getNewTime();
+	total_time = getTotalTime()
+	updateTotalTime(total_time + unstored_time);
 }
 
 function updateStoredTime() {
