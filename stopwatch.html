@@ -13,6 +13,7 @@
         text-align: right;
 	    font-family: Courier New;
 	    font-size: 12pt;
+		color:#303030
     }
     .task_name {
 	    font-family: Verdana;
@@ -41,29 +42,130 @@
 		font-size: 12pt;
 		font-weight: bold;
     }
+	.window {
+		position: absolute; 
+		width: 100%; 
+		height: 100%;
+	}
+	.timesheet_panel {
+		position: relative; 
+		margin-left: auto; 
+		margin-right: auto; 
+		margin-top: 40px; 
+		padding: 6pt; 
+		background: gray; 
+		width: 480px; 
+		height: 320px; 
+		text-color: light-gray;
+	}
+	.time_to_edit {
+		font-size: 12pt; 
+		text-decoration: none;
+		color:#303030;
+		font-weight: bold;
+	}
+	.time_input_box {
+		width: 90px; 
+		font-size: 12pt; 
+		font-family: Courier New;
+		text-align: right;
+		border: 0;
+		outline: 0;
+		height: 14pt;
+	}
   </style>
 </head>
 
 <body style="margin: 0; padding: 0">
   <form name="stopwatch">
-    <div style="position: absolute; width: 100%; height: 100%;">
-      <div id="page" style="position: relative; margin-left: auto; margin-right: auto; margin-top: 40px; padding: 6pt; background: gray; width: 480px; height: 320; text-color: light-gray;">&nbsp;</div>
+    <div class="window">
+      <div class="timesheet_panel" id="page">&nbsp;</div>
     </div>
 	<script>
+
+var valueBeforeEditing = 0;
+
+function convertTimeToOneField(seconds) {
+	return (seconds < 10 ? "0" : "") + seconds.toString();
+}
+
+function convertTimeToTwoFields(seconds) {
+	return convertTimeToOneField(Math.floor(seconds/60)) + ":" + convertTimeToOneField(seconds%60);
+}
+
+function convertTimeToThreeFields(seconds) {
+	return convertTimeToOneField(Math.floor(seconds/3600)) + ":" + convertTimeToTwoFields(seconds%3600);
+}
 
 function convertToTimeText(seconds) {
 	if (seconds < 0) 
 		return "-" + convertToTimeText(-seconds);
 	if (seconds < 60)
-		return (seconds < 10 ? "0" : "") + seconds.toString();
+		return convertTimeToOneField(seconds)
 	else if (seconds < 60*60)
-		return convertToTimeText(Math.floor(seconds/60)) + ":" + convertToTimeText(seconds%60);
+		return convertTimeToTwoFields(seconds);
 	else if (seconds < 60*60*24)
-		return convertToTimeText(Math.floor(seconds/(60*60))) + ":" + convertToTimeText(seconds%(60*60));
+		return convertTimeToThreeFields(seconds);
 	else
-		return (Math.floor(seconds/(24*60*60))).toString() + "d " + convertToTimeText(seconds%(24*60*60));
+		return (Math.floor(seconds/(24*60*60))).toString() + "d " + convertTimeToThreeFields(seconds%(24*60*60));
 };
 
+function convertNumber(txt) {
+	number = 0;
+	for (i=0; i<txt.length; ++i) {
+		character = txt.charCodeAt(i);
+		if (character < 48) 
+			return -1;
+		digit = character - 48;
+		if (digit >= 10)
+			return -1; 
+		number = 10 * number + digit;
+	};
+	return number;
+}
+
+function convertTimeString(txt) {
+	parts = txt.split(':');
+	if (parts.length == 1)
+		return convertNumber(parts[0]);
+	if (parts.length == 2)
+		return 60 * convertNumber(parts[0]) + convertNumber(parts[1]);
+	if (parts.length == 3)
+		return 60 * 60 * convertNumber(parts[0]) + 60 * convertNumber(parts[1]) + convertNumber(parts[2]);
+	return -1;
+}
+
+function convertWordToTime(txt) {
+	txt = txt.trim();
+	if (txt == "")
+		return -1;
+		
+	lastCharacter = txt.slice(-1);
+	allButLast = txt.slice(0, -1);
+	
+	if (lastCharacter == "d")
+		return 24*60*60*convertNumber(allButLast);
+	if (lastCharacter == "h")
+		return 60*60*convertNumber(allButLast);
+	if (lastCharacter == "m")
+		return 60*convertNumber(allButLast);
+	if (lastCharacter == "s")
+		return convertNumber(allButLast);
+	return convertTimeString(txt);	
+}
+
+function convertTimeDuration(txt) {
+	words = txt.split(' ')
+	result = 0;
+	for (j=0; j<words.length; ++j) {
+		value = convertWordToTime(words[j])
+		if (value < 0) 
+			return -1;
+		result = result + value;
+	}
+	return result;
+}
+	
 function convertToTimeWideText(seconds) {
 	if (seconds > 60*60)
 		return convertToTimeText(seconds);
@@ -108,8 +210,76 @@ function tag_a_selection(cell_class, value, body) {
 			attr_class(cell_class) + '>' + body + '</a>';
 }
 
-function tag_span(id, content) {
+function tag_span_with_time(id, content) {
 	return '<span id="time' + id.toString() + '">' + content + '</span>';
+}
+
+function tag_span_with_editable_time(id, content) {
+	id = id.toString();
+	return	'<a id="time' + id + '" href="javascript: editCell(' + id + 
+			');" class="time_to_edit">' + content + '</a>' +	 
+			'<div id="time' + id +'div" style="display: none; position: relative">' +
+		    '<input type="text" onFocusOut="acceptCellValue(' + id + 
+			')" onKeyDown="cellKey(event, ' + id + ')" id="time' + 
+			id + 'input" name="x' + id + 'input" class="time_input_box"></div>';
+}
+
+function cellKey(event, id) {
+	if (event.keyCode == 13) {
+		event.keyCode = 0;
+		acceptCellValue(id);
+	}
+	if (event.keyCode == 27) {
+		event.keyCode = 0;
+		escapeCell(id);
+	}
+}
+
+function editCell(id) {
+	getTextToEdit(id);
+	showEditBox(id);
+}
+
+function getTextToEdit(id) {
+	text_id = "time" + id.toString();
+	edit_id = text_id + "input";
+	valueBeforeEditing = document.getElementById(text_id).innerHTML;
+	document.getElementById(edit_id).value = valueBeforeEditing;
+	valueBeforeEditing = convertTimeDuration(valueBeforeEditing);
+}
+	
+function showEditBox(id) {
+	text_id = "time" + id.toString();
+	edit_id = text_id + "input";
+	edit_div_id = text_id + "div";
+	document.getElementById(text_id).style.display = "none";
+	document.getElementById(edit_div_id).style.display = "inline";
+	document.getElementById(edit_id).focus();
+	document.getElementById(edit_id).select();
+}
+
+function acceptCellValue(id) {
+	text_id = "time" + id.toString();
+	edit_id = text_id + "input";
+	newTimeValue = document.getElementById(edit_id).value;
+	newTimeValue = convertTimeDuration(newTimeValue);
+	if (newTimeValue != valueBeforeEditing && newTimeValue >= 0) {
+		updateTime(id, newTimeValue);
+		task_list[id].stored_time = newTimeValue;
+		if (web_interface_data.current_task == id)
+			startCountingTime();
+		else
+			storeData();
+	}
+	escapeCell(id);
+}
+
+function escapeCell(id)  {
+	getTextToEdit(id);
+	text_id = "time" + id.toString();
+	edit_div_id = text_id + "div";
+	document.getElementById(text_id).style.display = "inline";
+	document.getElementById(edit_div_id).style.display = "none";
 }
 
 function selectTaskByRadio(task_number) {
@@ -164,12 +334,16 @@ function getNewTime() {
 }
 
 function timeTick() {
-	if (web_interface_data.is_running) {
-		unstored_time = getNewTime();
-		total_time = getTotalTime()
-		updateTotalTime(total_time + unstored_time);
-		updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].stored_time + unstored_time);
-	}
+	unstored_time = getNewTime();
+	total_time = getTotalTime()
+	updateTotalTime(total_time + unstored_time);
+	updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].stored_time + unstored_time);
+}
+
+function showTotalTome() {
+	unstored_time = getNewTime();
+	total_time = getTotalTime()
+	updateTotalTime(total_time + unstored_time);
 }
 
 function updateStoredTime() {
@@ -219,12 +393,12 @@ table = "";
 table = tag_tr(
 	tag_td("head_checkbox", tag_checkbox(web_interface_data.is_running)) +
 	tag_td("head", "worktime") + 
-	tag_td("head_time", tag_span('all', convertToTimeWideText(getTotalTime() + getNewTime()))));
+	tag_td("head_time", tag_span_with_time('all', convertToTimeWideText(getTotalTime() + getNewTime()))));
 	
 for (i=0; i<task_list.length; ++i) {
 	row = tag_td("", tag_radio(i.toString(), (i == web_interface_data.current_task)));
 	row = row + tag_td("", tag_a_selection("task_name", i.toString(), task_list[i].name));
-	row = row + tag_td("task_time", tag_span(i, convertToTimeText(task_list[i].stored_time)));
+	row = row + tag_td("task_time", tag_span_with_editable_time(i, convertToTimeText(task_list[i].stored_time)));
 	table = table + tag_tr(row);
 };
 
