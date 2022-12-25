@@ -1,7 +1,31 @@
-# Stopwatch
+Stopwatch - simple timeseet application
+=======================================
+
 Stopwatch is simple timesheet interface application. It makes timeshet controll easy
-to note work time on different tasks. It is specially designed for users who ofter 
+to note work time on different tasks. It is specially designed for users who often 
 switches activity during work day.
+
+# Running application
+
+To start using timesheet stopwatch just start its web server. You can do it from command line or prepare configuration of a service. Starting from command line is easy:
+
+`python timesheet-server.py`
+
+To open timesheet in web browser - just type its address in adres bar:
+
+`http://localhost:8483/`
+
+Browser window content should look like
+
+
+
+
+
+
+
+
+
+
 
 Stopwatch is simple webserver written in python. To access timesheet interface, open page:
 <HOST>:8080/<USERNAME>, where <host} is the host you run web_server.py. <USERNAME> is 
