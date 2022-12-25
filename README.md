@@ -49,9 +49,9 @@ If such file does not exist, tasklist is taken from global task definition
 
 File should have structure:
 
-`{  
-	"task_list":  
-		[  
+>`{`  
+>>`"task_list":`  
+>>>`[`  
 			{  
 				"name":` _task_name_  
 			},  
