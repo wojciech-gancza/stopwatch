@@ -31,9 +31,38 @@ When shitching on checkbox in left upper corner - worktime starts running. Switc
 
 ## Storing time for different employees
 
-[to be displayed]
+Single timesheet stopwatch web server can serve many users at the same time. Just add the username to the url to track additional employee worktime. 
+
+> `http://localhost:8483/wgan`
+
+Opens timesheet interface for user _wgan_
 
 ## Define task lists
+
+Task lists should be defined in json file. This file is used when timesheet is requested first time for given day and employee id. File can be defined for given employee id as
+
+>`default-_username_.json`
+
+If such file does not exist, tasklist is taken from global task definition
+
+>`global-default.json.json`
+
+File should have structure:
+
+`{`
+`	"task_list":`
+`		[`
+`			{`
+`				"name":` _task_name_
+`			},
+			...
+		]
+	...
+}`
+
+
+
+## Editing time
 
 [to be displayed]
 
@@ -41,6 +70,9 @@ When shitching on checkbox in left upper corner - worktime starts running. Switc
 
 [to be displayed]
 
+## Web server parametrization
+
+[to be displayed]
 
 
 
