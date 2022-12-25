@@ -1,31 +1,52 @@
-Stopwatch - simple timeseet application
-=======================================
+Stopwatch - simple timesheet application
+========================================
 
 Stopwatch is simple timesheet interface application. It makes timeshet controll easy
 to note work time on different tasks. It is specially designed for users who often 
 switches activity during work day.
 
-# Running application
+## Purpose
+
+When working for different copmapies, I have to write information about time spent on various tasks and store this informations in differnt programs. In most complex case i know from my own experience, the time have to be stored in 3 differnt systems used for work time balance, task complexity statistics and for bookkeeping. Additionally, working from home and having up to 3 breaks in worktime, I need a piece of paper to denote when I am starting and stopping my work duties. It was complex, and during pre-realease time, It was hasd to note all data and the timeseet were filled afterward making them less reliable.
+
+I was thinking about simple tool allowing to note worktime without overhead of different interfaces and without the need to calculate time manually. Stopwatch is the result.
+
+I planned to store data directly in time booking programs I was working with, but it seems not to be easy to allow interaction with all posible (or at least popular) systems, where worktime can be stored, si I decided to make standalone application which stores data in json files. Such files can be easity read and process by simple scripts which can transform th data to needed form. 
+
+## Getting started
 
 To start using timesheet stopwatch just start its web server. You can do it from command line or prepare configuration of a service. Starting from command line is easy:
 
-`python timesheet-server.py`
+>`python timesheet-server.py`
 
 To open timesheet in web browser - just type its address in adres bar:
 
-`http://localhost:8483/`
+>`http://localhost:8483/`
 
 Browser window content should look like
 
+![Image](screenshot.png "screenshot")
+
+When shitching on checkbox in left upper corner - worktime starts running. Switching taks can be made by switching radio buttons in left column or by clicking task name. 
+
+## Storing time for different employees
+
+[to be displayed]
+
+## Define task lists
+
+[to be displayed]
+
+## Format of output file
+
+[to be displayed]
 
 
 
 
 
 
-
-
-
+## Old part of document - to be removed
 
 Stopwatch is simple webserver written in python. To access timesheet interface, open page:
 <HOST>:8080/<USERNAME>, where <host} is the host you run web_server.py. <USERNAME> is 
