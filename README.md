@@ -76,6 +76,10 @@ where:
 
 Output files are also work files for stopwatch and are actualized each time some modifications are performed on interface. File format is the same as file format of tasks definitions. Stopwach just add to each task entry one field named 'worked_time_in_seconds'. This field, contain time duration denoted as ineger number - count of seconds worked on given task.
 
+Files are stored in stopwatch directory or in directory selected by the option when starting web server. Name of hte file contain the date and employee id:
+
+>`YYYY-MM-DD-<emploee-id>.json`
+
 Stopwatch aplication adds also one section to root level of the stored object. Section is named 'web_interface_data' and contain 4 fields:
 - "is_running" - shows that the interface counts work time (worktime checkbox is checked'
 - "from_time" - time when 'is_running' was switched on. Time is denoted as integer number - number of seconds since Unix epoch.
