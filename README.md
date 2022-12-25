@@ -49,7 +49,7 @@ If such file does not exist, tasklist is taken from global task definition
 
 File should have structure:
 
->`{ "task_list": [ { "name":` _task_name_ } ... ]  ...  }`
+>`{ "task_list": [ { "name": <task_name> } ... ]  ...  }`
 
 Files with default task list can contain any additional data.
 
@@ -74,7 +74,13 @@ where:
 
 ## Format of output file
 
-[to be displayed]
+Output files are also work files for stopwatch and are actualized each time some modifications are performed on interface. File format is the same as file format of tasks definitions. Stopwach just add to each task entry one field named 'worked_time_in_seconds'. This field, contain time duration denoted as ineger number - count of seconds worked on given task.
+
+Stopwatch aplication adds also one section to root level of the stored object. Section is named 'web_interface_data' and contain 4 fields:
+- "is_running" - shows that the interface counts work time (worktime checkbox is checked'
+- "from_time" - time when 'is_running' was switched on. Time is denoted as integer number - number of seconds since Unix epoch.
+- "current_task" - index of currently selected task        
+- "user" - employee id the timesheet is stored.
 
 ## Web server parametrization
 
@@ -88,21 +94,3 @@ When starting web server, some parameters could be passed as program configurati
 In future releases you can expect
 - Possibility to add or substract time gom task by typing time prefixed by '+' or '-'.
 - Preserving other fields from default .json denoted object
-
-## Old part of document - to be removed
-
-Stopwatch is simple webserver written in python. To access timesheet interface, open page:
-<HOST>:8080/<USERNAME>, where <host} is the host you run web_server.py. <USERNAME> is 
-the id of the timeseet user. Users do not need to be registered. When data for the user 
-does not exist, default data are provided. 
-
-All data are stored in ordinary json files. File name contain date of timesheet and user id: 
-<YYYY-MM-DD>-<USERNAME>.json. When file does not exist - it is created based on "default-<USERNAME>.json"
-or "global-defauld.json", if user specific default file does not exist.
-
-Each change of data in interface is reflected in stored files. Files are not deleted by the 
-stopwatch server. 
-
-Data file format is simple, but some information might be important if you want to use timesheet data
-in your application.
-- Time is denoted and count of seconds.
