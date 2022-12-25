@@ -49,22 +49,28 @@ If such file does not exist, tasklist is taken from global task definition
 
 File should have structure:
 
->`{`  
->>`"task_list":`  
->>>`[`  
-			{  
-				"name":` _task_name_  
-			},  
-			...  
-		]  
-	...  
-}`
+>`{ "task_list": [ { "name":` _task_name_ } ... ]  ...  }`
 
-
+Files with default task list can contain any additional data.
 
 ## Editing time
 
-[to be displayed]
+It happens pretty often, that you forgot th start stopwatch, when starting work, and numbers need to be changed. To change value, clink on the time corresponding to given task and displayed in right column. Edit box appear and allow to set value. 
+
+Pressing <Enter> accept the value and update time. If entered value is not possible to convert to time duration - time is not changed. Also clicking elsewere to change current task or start/stop count in time checkbox - works as <Enter> key.
+
+To abandon changes - press <Esc>
+
+Allowed time formats are
+- XX - number of seconds
+- XX:XX - number of minutes and seconds
+- XX:XX:XX - number of hours, minutes and seconds
+- XXy
+- list of values separated by space
+
+where:
+- X is digit 0..9
+- y denotes type of value: s - for seconds, m - for minutes, h - for hours and d - for days.
 
 ## Format of output file
 
@@ -72,11 +78,16 @@ File should have structure:
 
 ## Web server parametrization
 
-[to be displayed]
+When starting web server, some parameters could be passed as program configuration:
+- "-p" or "--port" - port server is listening on (default is 8483)
+- "-i" or "--ip" - ip of the interface server is listening on (by default all interfaces are selected)
+- "-s" or "--storage" - directory where timesheet json files are stored
 
+## To Do
 
-
-
+In future releases you can expect
+- Possibility to add or substract time gom task by typing time prefixed by '+' or '-'.
+- Preserving other fields from default .json denoted object
 
 ## Old part of document - to be removed
 
