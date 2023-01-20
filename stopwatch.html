@@ -83,40 +83,40 @@
     </div>
 	<script>
 
-var valueBeforeEditing = 0;
+let valueBeforeEditing = 0;
 
-function convertTimeToOneField(seconds) {
-	return (seconds < 10 ? "0" : "") + seconds.toString();
+function convertTimeToOneField(seconds, leading="") {
+	return (seconds < 10 ? leading : "") + seconds.toString();
 }
 
-function convertTimeToTwoFields(seconds) {
-	return convertTimeToOneField(Math.floor(seconds/60)) + ":" + convertTimeToOneField(seconds%60);
+function convertTimeToTwoFields(seconds, leading="") {
+	return convertTimeToOneField(Math.floor(seconds/60), leading) + ":" + convertTimeToOneField(seconds%60, "0");
 }
 
-function convertTimeToThreeFields(seconds) {
-	return convertTimeToOneField(Math.floor(seconds/3600)) + ":" + convertTimeToTwoFields(seconds%3600);
+function convertTimeToThreeFields(seconds, leading="") {
+	return convertTimeToOneField(Math.floor(seconds/3600), leading) + ":" + convertTimeToTwoFields(seconds%3600, "0");
 }
 
-function convertToTimeText(seconds) {
+function convertToTimeText(seconds, leading="") {
 	if (seconds < 0) 
 		return "-" + convertToTimeText(-seconds);
 	if (seconds < 60)
-		return convertTimeToOneField(seconds)
+		return convertTimeToTwoFields(seconds, leading)
 	else if (seconds < 60*60)
-		return convertTimeToTwoFields(seconds);
+		return convertTimeToTwoFields(seconds, leading);
 	else if (seconds < 60*60*24)
-		return convertTimeToThreeFields(seconds);
+		return convertTimeToThreeFields(seconds, leading);
 	else
-		return (Math.floor(seconds/(24*60*60))).toString() + "d " + convertTimeToThreeFields(seconds%(24*60*60));
+		return (Math.floor(seconds/(24*60*60))).toString() + "d " + convertTimeToThreeFields(seconds%(24*60*60), "0");
 };
 
 function convertNumber(txt) {
-	number = 0;
+	let number = 0;
 	for (i=0; i<txt.length; ++i) {
-		character = txt.charCodeAt(i);
+		let character = txt.charCodeAt(i);
 		if (character < 48) 
 			return -1;
-		digit = character - 48;
+		let digit = character - 48;
 		if (digit >= 10)
 			return -1; 
 		number = 10 * number + digit;
@@ -125,7 +125,7 @@ function convertNumber(txt) {
 }
 
 function convertTimeString(txt) {
-	parts = txt.split(':');
+	let parts = txt.split(':');
 	if (parts.length == 1)
 		return convertNumber(parts[0]);
 	if (parts.length == 2)
@@ -137,11 +137,9 @@ function convertTimeString(txt) {
 
 function convertWordToTime(txt) {
 	txt = txt.trim();
-	if (txt == "")
-		return -1;
 		
-	lastCharacter = txt.slice(-1);
-	allButLast = txt.slice(0, -1);
+	let lastCharacter = txt.slice(-1);
+	let allButLast = txt.slice(0, -1);
 	
 	if (lastCharacter == "d")
 		return 24*60*60*convertNumber(allButLast);
@@ -155,10 +153,10 @@ function convertWordToTime(txt) {
 }
 
 function convertTimeDuration(txt) {
-	words = txt.split(' ')
-	result = 0;
+	let words = txt.replace("d", "d ").replace("h", "h ").replace("m", "m ").replace("s", "s ").split(' ')
+	let result = 0;
 	for (j=0; j<words.length; ++j) {
-		value = convertWordToTime(words[j])
+		let value = convertWordToTime(words[j])
 		if (value < 0) 
 			return -1;
 		result = result + value;
@@ -168,11 +166,11 @@ function convertTimeDuration(txt) {
 	
 function convertToTimeWideText(seconds) {
 	if (seconds > 60*60)
-		return convertToTimeText(seconds);
+		return convertToTimeText(seconds, "0");
 	else if (seconds > 60)
-		return "00:" + convertToTimeText(seconds);
+		return "0:" + convertToTimeText(seconds, "0");
 	else
-		return "00:00:" + convertToTimeText(seconds);
+		return "0:00:" + convertToTimeText(seconds, "0");
 }
 		
 function attr_class(class_name) {
@@ -241,17 +239,17 @@ function editCell(id) {
 }
 
 function getTextToEdit(id) {
-	text_id = "time" + id.toString();
-	edit_id = text_id + "input";
-	valueBeforeEditing = document.getElementById(text_id).innerHTML;
+	let text_id = "time" + id.toString();
+	let edit_id = text_id + "input";
+	let valueBeforeEditing = document.getElementById(text_id).innerHTML;
 	document.getElementById(edit_id).value = valueBeforeEditing;
 	valueBeforeEditing = convertTimeDuration(valueBeforeEditing);
 }
 	
 function showEditBox(id) {
-	text_id = "time" + id.toString();
-	edit_id = text_id + "input";
-	edit_div_id = text_id + "div";
+	let text_id = "time" + id.toString();
+	let edit_id = text_id + "input";
+	let edit_div_id = text_id + "div";
 	document.getElementById(text_id).style.display = "none";
 	document.getElementById(edit_div_id).style.display = "inline";
 	document.getElementById(edit_id).focus();
@@ -259,9 +257,9 @@ function showEditBox(id) {
 }
 
 function acceptCellValue(id) {
-	text_id = "time" + id.toString();
-	edit_id = text_id + "input";
-	newTimeValue = document.getElementById(edit_id).value;
+	let text_id = "time" + id.toString();
+	let edit_id = text_id + "input";
+	let newTimeValue = document.getElementById(edit_id).value;
 	newTimeValue = convertTimeDuration(newTimeValue);
 	if (newTimeValue != valueBeforeEditing && newTimeValue >= 0) {
 		updateTime(id, newTimeValue);
@@ -276,8 +274,8 @@ function acceptCellValue(id) {
 
 function escapeCell(id)  {
 	getTextToEdit(id);
-	text_id = "time" + id.toString();
-	edit_div_id = text_id + "div";
+	let text_id = "time" + id.toString();
+	let edit_div_id = text_id + "div";
 	document.getElementById(text_id).style.display = "inline";
 	document.getElementById(edit_div_id).style.display = "none";
 }
@@ -286,6 +284,8 @@ function selectTaskByRadio(task_number) {
 	updateStoredTime();
 	web_interface_data.current_task = task_number;
 	startCountingTime();
+	document.forms.stopwatch.running.checked = true;
+	web_interface_data.is_running = true;
 }
 
 function selectTaskByLink(task_number) {
@@ -309,18 +309,18 @@ function setPageContent(page) {
 }
 
 function updateTime(id, value) {
-	time_text = convertToTimeText(value);
+	let time_text = convertToTimeText(value);
 	document.getElementById("time"+id.toString()).innerHTML = time_text;
 }
 
 function updateTotalTime(value) {
-	time_text = convertToTimeWideText(value);
+	let time_text = convertToTimeWideText(value);
 	document.getElementById("timeall").innerHTML = time_text;
 }
 
 function getCurrentTimeAsSec() {
-	now = new Date();
-	now_as_seconds = now.getTime() / 1000;
+	let now = new Date();
+	let now_as_seconds = now.getTime() / 1000;
 	return Math.floor(now_as_seconds);
 }
 
@@ -334,15 +334,15 @@ function getNewTime() {
 }
 
 function timeTick() {
-	unstored_time = getNewTime();
-	total_time = getTotalTime()
+	let unstored_time = getNewTime();
+	let total_time = getTotalTime()
 	updateTotalTime(total_time + unstored_time);
 	updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].worked_time_in_seconds + unstored_time);
 }
 
 function showTotalTome() {
-	unstored_time = getNewTime();
-	total_time = getTotalTime()
+	let unstored_time = getNewTime();
+	let total_time = getTotalTime()
 	updateTotalTime(total_time + unstored_time);
 }
 
@@ -354,7 +354,7 @@ function updateStoredTime() {
 }
 
 function getTotalTime() {
-	total_time = 0;
+	let total_time = 0;
 	for (i=0; i<task_list.length; ++i) {
 		total_time = total_time + task_list[i].worked_time_in_seconds;
 	};
@@ -362,8 +362,8 @@ function getTotalTime() {
 }
 
 function storeData() {
-	data = { "task_list": task_list, "web_interface_data": web_interface_data };
-	txt = JSON.stringify(data)
+	let data = { "task_list": task_list, "web_interface_data": web_interface_data };
+	let txt = JSON.stringify(data)
 	
 	fetch('/', {
 		method: 'POST',
@@ -376,33 +376,32 @@ function storeData() {
 
 function loadData() {
 	
-	init = " ***** *** ";
+	let init = " ***** *** ";
 	
-	data = JSON.parse(init);
+	let data = JSON.parse(init);
 	
 	web_interface_data = data.web_interface_data
 	task_list = data.task_list
 };
 
-var web_interface_data = { };
-var task_list = [ ];
+let web_interface_data = { };
+let task_list = [ ];
 
 loadData();
 
-table = "";
-table = tag_tr(
+let table = tag_tr(
 	tag_td("head_checkbox", tag_checkbox(web_interface_data.is_running)) +
 	tag_td("head", "worktime") + 
 	tag_td("head_time", tag_span_with_time('all', convertToTimeWideText(getTotalTime() + getNewTime()))));
 	
-for (i=0; i<task_list.length; ++i) {
+for (let i=0; i<task_list.length; ++i) {
 	row = tag_td("", tag_radio(i.toString(), (i == web_interface_data.current_task)));
 	row = row + tag_td("", tag_a_selection("task_name", i.toString(), task_list[i].name));
 	row = row + tag_td("task_time", tag_span_with_editable_time(i, convertToTimeText(task_list[i].worked_time_in_seconds)));
 	table = table + tag_tr(row);
 };
 
-page = tag_table(table);
+let page = tag_table(table);
 setPageContent(page)
 
 updateTime(web_interface_data.current_task, task_list[web_interface_data.current_task].worked_time_in_seconds + getNewTime());
